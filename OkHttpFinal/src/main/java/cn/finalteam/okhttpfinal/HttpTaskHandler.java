@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class HttpTaskHandler {
 
     /** 正在请求的任务集合 */
-    private static Map<String, List<HttpTask>> httpTaskMap;
+    private static Map<String, List<OkHttpTask>> httpTaskMap;
     /** 单例请求处理器 */
     private static HttpTaskHandler httpTaskHandler = null;
 
@@ -52,18 +52,7 @@ public class HttpTaskHandler {
      * @param key
      */
     public void removeTask(String key) {
-
         if (httpTaskMap.containsKey(key)) {
-            List<HttpTask> tasks = httpTaskMap.get(key);
-            if (tasks != null && tasks.size() > 0) {
-                for (HttpTask task : tasks) {
-                    HttpRequest.cancel(task.getUrl());
-                    if (!task.isCancelled()) {
-                        task.cancel(true);
-                    }
-                }
-            }
-
             //移除对应的Key
             httpTaskMap.remove(key);
         }
@@ -74,13 +63,13 @@ public class HttpTaskHandler {
      * @param key
      * @param task
      */
-    public void addTask(String key, HttpTask task) {
+    void addTask(String key, OkHttpTask task) {
         if (httpTaskMap.containsKey(key)) {
-            List<HttpTask> tasks = httpTaskMap.get(key);
+            List<OkHttpTask> tasks = httpTaskMap.get(key);
             tasks.add(task);
             httpTaskMap.put(key, tasks);
         } else {
-            List<HttpTask> tasks = new ArrayList<>();
+            List<OkHttpTask> tasks = new ArrayList<>();
             tasks.add(task);
             httpTaskMap.put(key, tasks);
         }
@@ -91,7 +80,7 @@ public class HttpTaskHandler {
      * @param key
      * @return
      */
-    public boolean contains(String key) {
+    boolean contains(String key) {
         return httpTaskMap.containsKey(key);
     }
 }
